@@ -3,51 +3,96 @@
 ## 1. Purpose
 
 [`1_eda_contact_tracking_video_context.ipynb`](../notebooks/1_eda_contact_tracking_video_context.ipynb)
-builds the evidence base for the NFL contact detection workflow. It borrows the
-starter notebook's field visualization, helmet/video synchronization, and
-tracking-distance baseline, while keeping the implementation aligned with this
-repo's notebook standards.
+builds the evidence base for the NFL contact detection workflow. It now goes
+beyond the starter notebook by separating player-player and player-ground
+contact, analyzing temporal contact runs, profiling motion slices, and checking
+helmet/video synchronization metadata safely.
 
-## 2. Notebook Flow
+## 2. Current Output Review
+
+The latest executed EDA run loaded the core tables successfully:
+
+| Dataset | Rows | Notes |
+| --- | ---: | --- |
+| `train_labels.csv` | 4,721,618 | Parsed into contact type and pair keys. |
+| `sample_submission.csv` | 49,588 | Public mock test rows. |
+| `train_player_tracking.csv` | 1,353,053 | 10 Hz tracking rows. |
+| `test_player_tracking.csv` | 14,872 | Public mock test tracking rows. |
+| `train_baseline_helmets.csv` | 3,783,616 | Baseline helmet boxes. |
+| `test_baseline_helmets.csv` | 47,330 | Public mock test helmet boxes. |
+| `train_video_metadata.csv` | 480 | Sideline and Endzone metadata rows. |
+| `test_video_metadata.csv` | 4 | Public mock test metadata rows. |
+
+The overall contact rate observed in the run was about `1.37%`. This confirms
+that the task is severely imbalanced and that accuracy is not a useful
+diagnostic. MCC, positive-rate control, recall, and slice analysis are more
+important.
+
+## 3. Fixed Error
+
+The previous EDA notebook failed in the helmet/video metadata cell with:
+
+```text
+KeyError: "Column(s) ['video'] do not exist"
+```
+
+Root cause: `train_video_metadata.csv` contains timing columns such as
+`start_time`, `end_time`, and `snap_time`, but it does not contain a `video`
+filename column. Video filenames live in the baseline helmet files.
+
+Fix: the updated notebook now summarizes video metadata by `dataset` and
+`view`, and summarizes video filenames only from the helmet files.
+
+## 4. Notebook Flow
 
 | Step | Purpose |
 | --- | --- |
-| Setup and configuration | Define paths, plotting defaults, target names, and fast-run flags. |
-| Load data | Read labels, sample submission, tracking, helmets, and video metadata. |
-| Data quality | Check schemas, missingness, duplicates, contact ID parsing, and memory use. |
-| Label analysis | Measure contact balance by player-player vs player-ground contact. |
-| Tracking context | Inspect player positions, speed, acceleration, orientation, and play length. |
-| Helmet and video context | Check box coverage, views, frame counts, and metadata timing. |
-| Field visualization | Plot an example play/step on a football field. |
-| Distance baseline | Tune player-player distance thresholds with MCC. |
+| Setup and configuration | Resolve Kaggle paths, define runtime flags, frame-rate constants, and plotting defaults. |
+| Load data | Read labels, submission, tracking, helmets, and train/test video metadata. |
+| Data quality | Check missingness, duplicates, ID parsing, and train/test schema alignment. |
+| Contact label balance | Measure class imbalance by player-player vs ground rows and by play. |
+| Temporal dynamics | Analyze contact rate by step and contiguous positive-contact run duration. |
+| Tracking context | Inspect field position, speed, distance, acceleration, orientation, and direction. |
+| Ground-contact motion | Join ground labels to tracking motion fields to compare contact vs non-contact motion. |
+| Player-player distance | Analyze distance distributions, contact rate by distance bin, and threshold behavior. |
+| Helmet/video metadata | Safely summarize helmet box coverage, metadata duration, snap offset, and estimated frames. |
+| Field visualization | Plot a selected play and step on a football field. |
+| Distance baseline | Tune a distance threshold with play-grouped validation and MCC. |
 
-## 3. Initial Hypotheses
+## 5. Modeling Implications
 
-Player-player contact should be strongly related to tracking distance, but the
-relationship will be noisy because player body contact is not the same as
-helmet-center distance. The distance baseline should be treated as a sanity
-check and lower bound, not as the final modeling path.
+The EDA supports a two-branch modeling plan:
 
-Player-ground contact needs a separate strategy. Since the starter distance
-baseline leaves ground rows as non-contact, the next model should add features
-from motion, posture proxies, helmet boxes, and temporal context.
+- Player-player contact should start with distance, relative speed, relative
+  acceleration, orientation alignment, nearest-player features, and temporal
+  smoothing.
+- Player-ground contact should be modeled separately because the distance
+  baseline cannot detect it. Useful features should include speed, acceleration,
+  signed acceleration, sudden motion changes, helmet box geometry, visibility,
+  and temporal context.
 
-## 4. Validation Implications
+## 6. Validation Implications
 
-Rows from the same `game_play` are temporally and spatially correlated. EDA and
-modeling notebooks should use play-grouped validation whenever they report MCC,
-so a model is tested on plays it did not see during threshold tuning or model
-fitting.
+Rows from the same `game_play` are highly correlated. Contact labels are also
+temporally adjacent and can be noisy within roughly one 10 Hz timestep.
 
-## 5. First Experiment
+Default validation should therefore:
 
-The first experiment is a cleaned-up version of the sample notebook baseline:
+- group by `game_play`;
+- tune thresholds on held-out plays;
+- evaluate player-player and ground contact separately;
+- inspect prediction smoothing after, not before, out-of-fold validation.
+
+## 7. First Experiment
+
+The first experiment remains a cleaned-up version of the starter notebook
+baseline:
 
 - parse `contact_id`;
 - merge tracking coordinates for both players;
 - compute Euclidean distance in yards;
-- tune a hard distance threshold on validation labels;
-- write `submission.csv` with the required schema.
+- tune a hard distance threshold with MCC;
+- write `submission.csv`.
 
 Expected limitation: all ground rows are predicted as `0`, so recall on ground
-contact will be poor until a dedicated ground-contact branch is added.
+contact will remain poor until a dedicated ground-contact branch is added.
