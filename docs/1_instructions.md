@@ -59,16 +59,12 @@ of unseen plays.
 
 ![Tracking orientation reference](https://www.googleapis.com/download/storage/v1/b/kaggle-user-content/o/inbox%2F3258%2F820e86013d48faacf33b7a32a15e814c%2FIncreasing%20Dir%20and%20O.png?generation=1572285857588233&alt=media)
 
-## 5. Expected Kaggle Paths
+## 5. Expected Kaggle Path
 
-The notebooks resolve these automatically and also scan visible input folders
-for a directory containing the required CSV files:
+The notebooks use the known competition mount directly:
 
 ```text
 /kaggle/input/competitions/nfl-player-contact-detection
-/kaggle/input/competitions/1st-and-future-player-contact-detection
-/kaggle/input/1st-and-future-player-contact-detection
-/kaggle/input/nfl-player-contact-detection
 ```
 
 ## 6. Files

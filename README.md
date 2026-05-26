@@ -11,15 +11,10 @@ when a player is in contact with another player or with the ground by combining
 Next Gen Stats tracking data, baseline helmet detections, video metadata, and
 contact labels.
 
-Expected Kaggle input path is resolved automatically from the competition mount.
-The notebooks check the current Kaggle slug first and keep the older starter
-notebook slug as a fallback:
+Expected Kaggle input path:
 
 ```text
 /kaggle/input/competitions/nfl-player-contact-detection
-/kaggle/input/competitions/1st-and-future-player-contact-detection
-/kaggle/input/1st-and-future-player-contact-detection
-/kaggle/input/nfl-player-contact-detection
 ```
 
 Input files:
@@ -69,8 +64,9 @@ simple and submission-safe, but it predicts no ground contact.
    next experiment using body/helmet/video features.
 
 Notebook 3 is the current recommended modeling path. It trains a sampled
-tracking-feature classifier, validates on held-out plays with natural class
-balance, tunes a hard threshold for MCC, and writes `submission.csv`.
+tracking-feature classifier, adds prior-step movement and pair-distance-change
+features, validates on held-out plays with natural class balance, tunes a hard
+threshold for MCC, and writes `submission.csv`.
 
 The competition metric is Matthews Correlation Coefficient, so notebooks should
 report MCC for hard predictions instead of optimizing accuracy.

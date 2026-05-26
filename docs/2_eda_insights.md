@@ -131,11 +131,32 @@ adds an immediate model upgrade:
 - validates on held-out plays with natural class balance;
 - attaches player 1 tracking features for every row;
 - attaches player 2 tracking features for player-player rows;
-- creates pair distance, relative motion, angular-difference, same-team, and
-  ground-contact indicators;
+- creates prior-step motion deltas, cyclic direction/orientation encodings,
+  pair distance, pair-distance change, relative motion, angular-difference,
+  same-team, and ground-contact indicators;
 - trains an offline-safe sklearn classifier;
 - tunes the probability threshold directly for MCC;
 - writes `submission.csv`.
 
 This should be stronger than the distance baseline because it does not force all
 ground-contact rows to zero.
+
+## 10. Notebook Review
+
+| Notebook | Current Role | Key Insight | Limitation |
+| --- | --- | --- | --- |
+| `1_eda_contact_tracking_video_context.ipynb` | Data understanding and failure-mode discovery. | The dataset is large, very imbalanced, temporally correlated, and contains distinct player-player and ground-contact problems. | It should be rerun in Kaggle after every major EDA addition because local execution cannot access competition data. |
+| `2_distance_baseline_first_experiment.ipynb` | Starter-style sanity baseline. | Player-player distance is a useful lower bound and validates the submission path. | Ground rows are forced to `0`, so MCC is capped by missing ground-contact recall. |
+| `3_tracking_feature_model.ipynb` | Current recommended model. | Tracking dynamics let the model learn both player-player and ground-contact patterns. | It is still tracking-only; helmet/video visibility and temporal smoothing remain the biggest likely next gains. |
+
+## 11. Path Decision
+
+Earlier notebooks carried several `DATA_DIR` candidates while the Kaggle mount
+was still unclear. The correct path is now confirmed as:
+
+```text
+/kaggle/input/competitions/nfl-player-contact-detection
+```
+
+All notebooks should use that single path. This keeps Kaggle failures easier to
+debug and avoids accidentally reading from an older dataset-style mount.

@@ -47,11 +47,8 @@ Each notebook should include:
 - a clear configuration section near the top;
 - explicit mode flags such as `RUN_FAST`, `FAST_SAMPLE_PLAYS`, and
   `DISTANCE_THRESHOLDS`;
-- automatic Kaggle competition path resolution for
-  `/kaggle/input/competitions/nfl-player-contact-detection`,
-  `/kaggle/input/competitions/1st-and-future-player-contact-detection`,
-  `/kaggle/input/1st-and-future-player-contact-detection`, and
-  `/kaggle/input/nfl-player-contact-detection`;
+- the fixed Kaggle competition path
+  `/kaggle/input/competitions/nfl-player-contact-detection`;
 - Markdown insight cells after important checks, plots, or metrics;
 - artifact-writing cells for reusable outputs such as `submission.csv`.
 
