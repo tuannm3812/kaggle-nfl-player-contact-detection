@@ -71,6 +71,10 @@ The EDA supports a two-branch modeling plan:
   signed acceleration, sudden motion changes, helmet box geometry, visibility,
   and temporal context.
 
+Notebook 3 implements the first version of this plan using tracking-only
+tabular features. It should be the next model to run when the distance baseline
+underperforms because it can score both player-player rows and ground rows.
+
 ## 6. Validation Implications
 
 Rows from the same `game_play` are highly correlated. Contact labels are also
@@ -96,3 +100,42 @@ baseline:
 
 Expected limitation: all ground rows are predicted as `0`, so recall on ground
 contact will remain poor until a dedicated ground-contact branch is added.
+
+## 8. Recommended Deep Dives
+
+The next EDA passes should focus on the failure modes most likely to improve
+MCC:
+
+1. **Ground-contact motion windows**: compare speed, acceleration, signed
+   acceleration, and distance traveled for `t-3` through `t+3` steps around
+   ground-contact labels.
+2. **Pair-distance dynamics**: analyze not just distance at step `t`, but
+   distance change, closing speed, and minimum distance in a short window.
+3. **Nearest-player context**: for each player-step, compute nearest teammate
+   and opponent distances; contact risk depends on local density.
+4. **Position and team slices**: evaluate contact rates and model errors by
+   football position, same-team/opponent contact, and play duration.
+5. **Helmet visibility**: summarize whether each player has Sideline/Endzone
+   boxes near the synced frame, plus box size and movement. Missing or tiny
+   boxes may explain video/model errors.
+6. **Temporal smoothing sensitivity**: because labels can be off by about one
+   10 Hz tick, validate whether short run filling or probability smoothing
+   improves grouped out-of-fold MCC.
+
+## 9. Improved Model Direction
+
+[`3_tracking_feature_model.ipynb`](../notebooks/3_tracking_feature_model.ipynb)
+adds an immediate model upgrade:
+
+- keeps all positive labels and samples negatives for tractable training;
+- validates on held-out plays with natural class balance;
+- attaches player 1 tracking features for every row;
+- attaches player 2 tracking features for player-player rows;
+- creates pair distance, relative motion, angular-difference, same-team, and
+  ground-contact indicators;
+- trains an offline-safe sklearn classifier;
+- tunes the probability threshold directly for MCC;
+- writes `submission.csv`.
+
+This should be stronger than the distance baseline because it does not force all
+ground-contact rows to zero.

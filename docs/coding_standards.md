@@ -21,10 +21,11 @@ Use numbered, stable notebook names that match the project workflow:
 
 1. `1_eda_contact_tracking_video_context.ipynb`
 2. `2_distance_baseline_first_experiment.ipynb`
+3. `3_tracking_feature_model.ipynb`
 
 Future notebooks should continue the sequence and describe the actual workflow,
-for example `3_tracking_features_lightgbm.ipynb` or
-`4_video_features_and_fusion.ipynb`.
+for example `4_video_features_and_fusion.ipynb` or
+`5_temporal_smoothing_and_ensemble.ipynb`.
 
 ## 3. Code Style
 

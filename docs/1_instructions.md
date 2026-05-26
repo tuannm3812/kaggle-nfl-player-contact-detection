@@ -192,6 +192,10 @@ The repository starts with two notebooks:
 2. Build the first submission-safe experiment in
    [`2_distance_baseline_first_experiment.ipynb`](../notebooks/2_distance_baseline_first_experiment.ipynb)
    using the starter notebook's tracking-distance idea with cleaner validation.
+3. Run the improved tracking-feature model in
+   [`3_tracking_feature_model.ipynb`](../notebooks/3_tracking_feature_model.ipynb)
+   to learn player-player and player-ground contact patterns from tracking
+   features and tune the final threshold for MCC.
 
 Recommended next experiments:
 
