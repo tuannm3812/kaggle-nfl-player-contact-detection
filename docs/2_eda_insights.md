@@ -68,6 +68,12 @@ The public/private scores rose by `+0.01422` and `+0.02170` over Notebook 3,
 respectively. The private score is higher than public, which is a good sign for
 generalization.
 
+Notebook 5 was run after this and confirmed the setup, data loading, feature
+construction, and model training stages still work. It failed only in the new
+type-specific threshold search because the custom MCC helper used `np.sqrt` on
+large confusion-count products. The fixed version uses a float-safe
+`math.sqrt` calculation and should be rerun before making any score decision.
+
 ## 4. Fixed Error
 
 The previous EDA notebook failed in the helmet/video metadata cell with:
