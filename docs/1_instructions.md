@@ -199,6 +199,10 @@ The repository starts with two notebooks:
 5. Run the type-specific threshold challenger in
    [`5_type_specific_thresholds.ipynb`](../notebooks/5_type_specific_thresholds.ipynb)
    to tune separate ground and player-player cutoffs after smoothing.
+6. Run the type-specific model challenger in
+   [`6_type_specific_models.ipynb`](../notebooks/6_type_specific_models.ipynb)
+   to train separate ground and player-player classifiers before smoothing and
+   threshold tuning.
 
 Recommended next experiments:
 

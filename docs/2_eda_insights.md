@@ -58,7 +58,7 @@ play/pair probability smoothing. It should replace Notebook 3 only if grouped
 validation beats `0.65310` or if the ground-contact slice improves without a
 meaningful player-player regression.
 
-Notebook 4 has now been scored and is the current champion:
+Notebook 4 improved the first scored model:
 
 | Submission | Public MCC | Private MCC | Local Validation MCC |
 | --- | ---: | ---: | ---: |
@@ -68,11 +68,17 @@ The public/private scores rose by `+0.01422` and `+0.02170` over Notebook 3,
 respectively. The private score is higher than public, which is a good sign for
 generalization.
 
-Notebook 5 was run after this and confirmed the setup, data loading, feature
-construction, and model training stages still work. It failed only in the new
-type-specific threshold search because the custom MCC helper used `np.sqrt` on
-large confusion-count products. The fixed version uses a float-safe
-`math.sqrt` calculation and should be rerun before making any score decision.
+Notebook 5 is now the current scored champion:
+
+| Submission | Public MCC | Private MCC | Local Validation MCC |
+| --- | ---: | ---: | ---: |
+| Type-Specific Thresh, Version 3 | 0.65170 | 0.65127 | 0.67650 |
+
+The type-specific threshold gain is mostly player-player precision. The best
+ground threshold stayed at `0.59`, while the best player-player threshold rose
+to `0.70`. Ground MCC stayed at `0.50623`; player-player MCC improved from
+`0.72226` to `0.72836`. The next refinement should therefore train separate
+contact-type models or add dedicated ground-contact features.
 
 ## 4. Fixed Error
 
@@ -194,8 +200,9 @@ ground-contact rows to zero.
 | `1_eda_contact_tracking_video_context.ipynb` | Data understanding and failure-mode discovery. | The dataset is large, very imbalanced, temporally correlated, and contains distinct player-player and ground-contact problems. | It should be rerun in Kaggle after every major EDA addition because local execution cannot access competition data. |
 | `2_distance_baseline_first_experiment.ipynb` | Starter-style sanity baseline. | Player-player distance is a useful lower bound and validates the submission path. | Ground rows are forced to `0`, so MCC is capped by missing ground-contact recall. |
 | `3_tracking_feature_model.ipynb` | Current recommended model. | Tracking dynamics let the model learn both player-player and ground-contact patterns. | It is still tracking-only; helmet/video visibility and temporal smoothing remain the biggest likely next gains. |
-| `4_nearest_player_and_smoothing.ipynb` | Current scored champion. | Local player density and temporal smoothing improved both public and private MCC. | Ground contact remains weaker than player-player contact. |
-| `5_type_specific_thresholds.ipynb` | Current challenger. | Ground and player-player rows have different base rates, so separate thresholds may improve MCC. | Needs a Kaggle validation run before submission. |
+| `4_nearest_player_and_smoothing.ipynb` | Superseded champion. | Local player density and temporal smoothing improved both public and private MCC. | Ground contact remains weaker than player-player contact. |
+| `5_type_specific_thresholds.ipynb` | Current scored champion. | Separate thresholds improved player-player precision and lifted both public and private MCC. | Ground contact did not improve, so it is the next target. |
+| `6_type_specific_models.ipynb` | Current challenger. | Separate ground and player-player models may improve the unchanged ground slice. | Needs a Kaggle validation run before submission. |
 
 ## 12. Path Decision
 

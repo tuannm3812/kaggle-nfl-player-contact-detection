@@ -11,23 +11,25 @@ Current expected notebook versions:
 | `3_tracking_feature_model.ipynb` | `TRACKING_FEATURE_V5_DYNAMICS` |
 | `4_nearest_player_and_smoothing.ipynb` | `NEAREST_SMOOTHING_V1_CHALLENGER` |
 | `5_type_specific_thresholds.ipynb` | `TYPE_THRESHOLDS_V2_SAFE_MCC` |
+| `6_type_specific_models.ipynb` | `TYPE_MODELS_V1_CHALLENGER` |
 
 If Kaggle output shows an older version string, sync the notebook before using
 the output for decisions.
 
 | Rank | Notebook | Submission Name | Local Validation MCC | Public MCC | Private MCC | Decision |
 | ---: | --- | --- | ---: | ---: | ---: | --- |
-| 1 | `4_nearest_player_and_smoothing.ipynb` | Nearest Player, Version 3 | 0.67455 | 0.64497 | 0.64763 | Current scored champion |
-| 2 | `5_type_specific_thresholds.ipynb` | Type-specific thresholds | Pending | Pending | Pending | Run next |
-| 3 | `3_tracking_feature_model.ipynb` | Tracking Feature, Version 3 | 0.65310 | 0.63075 | 0.62593 | Superseded |
-| 4 | `2_distance_baseline_first_experiment.ipynb` | Distance baseline | 0.51863 | - | - | Superseded |
+| 1 | `5_type_specific_thresholds.ipynb` | Type-Specific Thresh, Version 3 | 0.67650 | 0.65170 | 0.65127 | Current scored champion |
+| 2 | `6_type_specific_models.ipynb` | Type-specific models | Pending | Pending | Pending | Run next |
+| 3 | `4_nearest_player_and_smoothing.ipynb` | Nearest Player, Version 3 | 0.67455 | 0.64497 | 0.64763 | Superseded |
+| 4 | `3_tracking_feature_model.ipynb` | Tracking Feature, Version 3 | 0.65310 | 0.63075 | 0.62593 | Superseded |
+| 5 | `2_distance_baseline_first_experiment.ipynb` | Distance baseline | 0.51863 | - | - | Superseded |
 
 Notebook 3 is the first scored model. Its public/private gap is small
 (`0.00482`), which suggests the model generalizes reasonably across leaderboard
 splits. Local validation is optimistic by about `0.022` to `0.027` MCC.
 
-Notebook 4 is now the scored champion. It improved over Notebook 3 by
-`+0.01422` public MCC and `+0.02170` private MCC.
+Notebook 5 is now the scored champion. It improved over Notebook 4 by
+`+0.00673` public MCC and `+0.00364` private MCC.
 
 ## 2. Champion Diagnostics
 
@@ -50,7 +52,7 @@ Interpretation:
 
 | Notebook | Status | Goal | Submit If |
 | --- | --- | --- | --- |
-| `5_type_specific_thresholds.ipynb` | Fixed; rerun needed | Tune separate ground and player-player thresholds after smoothing | Submit only if local MCC beats `0.67455` |
+| `6_type_specific_models.ipynb` | Ready to run | Train separate ground and player-player models before smoothing and threshold tuning | Submit only if local MCC beats `0.67650` |
 
 Notebook 4 targeted two likely weaknesses:
 
@@ -78,15 +80,31 @@ Notebook 4 local validation by contact type:
 | Ground | 0.50623 | 3.47% | 3.87% |
 | Player-player | 0.72226 | 1.02% | 1.37% |
 
-Notebook 5 tests whether separate contact-type thresholds can improve on this
-without changing the model itself.
+Notebook 5 improved this by keeping the ground threshold at `0.59` and raising
+the player-player threshold to `0.70`. The gain came from player-player
+precision: player-player local MCC rose from `0.72226` to `0.72836`, while
+ground local MCC stayed at `0.50623`.
 
-Latest Notebook 5 run reached model training but failed during threshold
-tuning. The model output is therefore not a submission candidate yet.
+Notebook 5 validation details:
 
-| Failed Version | Error | Fix |
-| --- | --- | --- |
-| `TYPE_THRESHOLDS_V1_CHALLENGER` | `np.sqrt` failed on large Python/object confusion-count products in the custom MCC helper. | `TYPE_THRESHOLDS_V2_SAFE_MCC` uses `math.sqrt` with float factors and clears the failed output. |
+| Metric | Value |
+| --- | ---: |
+| Best smoothing window | 5 |
+| Best ground threshold | 0.59 |
+| Best player-player threshold | 0.70 |
+| Local validation MCC | 0.67650 |
+| Predicted positive rate | 1.38% |
+| Submission positive rate | 1.92% |
+
+Notebook 5 local validation by contact type:
+
+| Contact Type | Local MCC | Actual Rate | Predicted Rate |
+| --- | ---: | ---: | ---: |
+| Ground | 0.50623 | 3.47% | 3.87% |
+| Player-player | 0.72836 | 1.02% | 1.15% |
+
+Notebook 6 tests whether training separate models can improve the unchanged
+ground slice without giving back the player-player threshold gain.
 
 ## 4. Evaluation Rules
 
@@ -103,8 +121,8 @@ Use this decision order for new experiments:
 
 | Priority | Experiment | Reason |
 | ---: | --- | --- |
-| 1 | Run Notebook 5 | Tests whether type-specific thresholds improve MCC over Notebook 4. |
-| 2 | Dedicated ground-contact model | Ground slice remains weaker than player-player contact. |
+| 1 | Run Notebook 6 | Tests whether type-specific models improve the unchanged ground slice. |
+| 2 | Dedicated ground-contact features | Ground slice remains weaker than player-player contact. |
 | 3 | Helmet visibility features | Baseline helmet boxes can provide posture and visibility proxies. |
 | 4 | Short-window features around `t-2` to `t+2` | Contact labels are noisy and contact evolves over adjacent steps. |
 | 5 | Model blending | A ground-focused model may complement the tracking champion. |
