@@ -28,10 +28,10 @@ Use numbered, stable notebook names that match the project workflow:
 5. `5_type_specific_thresholds.ipynb`
 6. `6_type_specific_models.ipynb`
 7. `7_blended_type_models.ipynb`
+8. `8_yolo_video_feature_probe.ipynb`
 
 Future notebooks should continue the sequence and describe the actual workflow,
-for example `8_video_features_and_fusion.ipynb` or
-`9_model_ensemble.ipynb`.
+for example `9_helmet_feature_model.ipynb` or `10_model_ensemble.ipynb`.
 
 ## 3. Code Style
 
@@ -109,6 +109,8 @@ Project-safe feature themes:
 - player-ground heuristics using speed, acceleration, orientation, and video;
 - pair identity and roster-safe interaction context;
 - helmet box geometry, visibility, and synchronized video-frame context;
+- optional YOLO/video detections only when weights are attached through
+  Kaggle-compatible offline inputs;
 - temporal smoothing within a play without using future labels.
 
 Avoid target leakage:

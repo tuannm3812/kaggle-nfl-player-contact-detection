@@ -207,13 +207,20 @@ The repository starts with two notebooks:
    [`7_blended_type_models.ipynb`](../notebooks/7_blended_type_models.ipynb)
    to blend unified and type-specific probabilities while guarding the
    ground-contact slice.
+8. Run the YOLO/video feature probe in
+   [`8_yolo_video_feature_probe.ipynb`](../notebooks/8_yolo_video_feature_probe.ipynb)
+   to inspect synchronized frames, helmet overlays, optional YOLO detections,
+   and cheap helmet-derived feature candidates.
 
 Recommended next experiments:
 
-1. Add relative distance, relative speed, acceleration, orientation, and nearest
-   player features for player-player contact.
-2. Build a dedicated ground-contact branch using motion, posture proxies,
-   helmet boxes, and temporal context.
-3. Add temporal smoothing by play and pair after out-of-fold validation.
-4. Add video-derived features once the tracking-only validation harness is
-   stable.
+1. Submit Notebook 7 after confirming the printed notebook version and compare
+   public/private MCC against Notebook 5.
+2. Use Notebook 8 to validate frame synchronization, target-player visibility,
+   and whether YOLO adds information beyond the provided helmet boxes.
+3. Add helmet visibility, box geometry, and pixel-distance features before
+   attempting a heavy CNN.
+4. Build short-window tracking and helmet interpolation features around
+   `t-2` through `t+2`.
+5. Move to multi-fold grouped validation before larger video models or stage-2
+   blends.

@@ -13,6 +13,7 @@ Current expected notebook versions:
 | `5_type_specific_thresholds.ipynb` | `TYPE_THRESHOLDS_V2_SAFE_MCC` |
 | `6_type_specific_models.ipynb` | `TYPE_MODELS_V1_CHALLENGER` |
 | `7_blended_type_models.ipynb` | `BLENDED_TYPE_MODELS_V1_CHALLENGER` |
+| `8_yolo_video_feature_probe.ipynb` | `YOLO_VIDEO_PROBE_V1` |
 
 If Kaggle output shows an older version string, sync the notebook before using
 the output for decisions.
@@ -20,7 +21,7 @@ the output for decisions.
 | Rank | Notebook | Submission Name | Local Validation MCC | Public MCC | Private MCC | Decision |
 | ---: | --- | --- | ---: | ---: | ---: | --- |
 | 1 | `5_type_specific_thresholds.ipynb` | Type-Specific Thresh, Version 3 | 0.67650 | 0.65170 | 0.65127 | Current scored champion |
-| 2 | `7_blended_type_models.ipynb` | Blended type models | Pending | Pending | Pending | Run next |
+| 2 | `7_blended_type_models.ipynb` | Blended type models | 0.67944 | Pending | Pending | Submit challenger |
 | 3 | `6_type_specific_models.ipynb` | Type-Specific Model, Version 2 | 0.67530 | 0.65212 | 0.64025 | Rejected: private regression |
 | 4 | `4_nearest_player_and_smoothing.ipynb` | Nearest Player, Version 3 | 0.67455 | 0.64497 | 0.64763 | Superseded |
 | 5 | `3_tracking_feature_model.ipynb` | Tracking Feature, Version 3 | 0.65310 | 0.63075 | 0.62593 | Superseded |
@@ -54,7 +55,8 @@ Interpretation:
 
 | Notebook | Status | Goal | Submit If |
 | --- | --- | --- | --- |
-| `7_blended_type_models.ipynb` | Ready to run | Blend the stable unified model with type-specific models before smoothing and threshold tuning | Submit only if local MCC beats `0.67650` and ground MCC is at least `0.50623` |
+| `7_blended_type_models.ipynb` | Local validation improved | Blend the stable unified model with type-specific models before smoothing and threshold tuning | Submit as the next leaderboard challenger; keep Notebook 5 selected until public/private confirm it |
+| `8_yolo_video_feature_probe.ipynb` | EDA/video probe | Inspect frame sync, helmet overlays, optional YOLO detections, and cheap helmet geometry features | Do not submit directly; use findings to decide whether Notebook 9 should add video features |
 
 Notebook 4 targeted two likely weaknesses:
 
@@ -126,6 +128,27 @@ probabilities with Notebook 6-style type-specific probabilities. The goal is to
 capture any player-player lift without allowing the ground model to fully
 replace the more stable unified model.
 
+Notebook 7 has now cleared the first local gate:
+
+| Metric | Notebook 5 | Notebook 7 |
+| --- | ---: | ---: |
+| Local validation MCC | 0.67650 | 0.67944 |
+| Best smoothing window | 5 | 5 |
+| Ground threshold | 0.59 | 0.59 |
+| Player-player threshold | 0.70 | 0.63 |
+| Submission positive rate | 1.92% | 1.99% |
+
+Interpretation: the blended model improves local MCC while keeping the same
+ground threshold and a similar submission positive rate. It is a reasonable
+next Kaggle submission, but Notebook 5 should remain the selected champion
+until Notebook 7's private score is known.
+
+The Team Hydrogen 2nd-place writeup suggests the next major gains probably come
+from video-aware modeling rather than more small tabular threshold changes. The
+near-term version for this repo is not a full CNN ensemble yet; it is a
+helmet/video feature probe followed by cheap video-derived features if the EDA
+shows separation.
+
 ## 4. Evaluation Rules
 
 Use this decision order for new experiments:
@@ -141,8 +164,9 @@ Use this decision order for new experiments:
 
 | Priority | Experiment | Reason |
 | ---: | --- | --- |
-| 1 | Run Notebook 7 | Tests whether partial blending keeps Notebook 5 stability while using any useful type-model signal. |
-| 2 | Dedicated ground-contact features | Ground slice remains weaker and Notebook 6 made it less stable. |
-| 3 | Helmet visibility features | Baseline helmet boxes can provide posture and visibility proxies. |
+| 1 | Submit Notebook 7 | Local MCC rose to `0.67944`; leaderboard scores decide whether it replaces Notebook 5. |
+| 2 | Run Notebook 8 YOLO/video probe | Tests frame sync, helmet overlays, and whether optional YOLO adds information beyond helmet boxes. |
+| 3 | Helmet visibility features | Baseline helmet boxes can provide posture, occlusion, and pixel-distance proxies. |
 | 4 | Short-window features around `t-2` to `t+2` | Contact labels are noisy and contact evolves over adjacent steps. |
-| 5 | Model blending | A ground-focused model may complement the tracking champion. |
+| 5 | Multi-fold grouped validation | Team Hydrogen used grouped CV; this would reduce single-split volatility before heavier models. |
+| 6 | Stage-2 blend | Use tracking probabilities plus selected distance/position/window features only after OOF predictions exist. |

@@ -5,22 +5,24 @@
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Kaggle](https://img.shields.io/badge/Kaggle-NFL%20Player%20Contact%20Detection-20BEFF?style=flat-square&logo=kaggle&logoColor=white)
 ![Metric](https://img.shields.io/badge/Metric-MCC-2E7D32?style=flat-square)
-![Status](https://img.shields.io/badge/Status-Notebook%205%20Champion-2E7D32?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Notebook%207%20Challenger-2E7D32?style=flat-square)
 
 This repository contains a notebook-first workflow for Kaggle's
 **NFL Player Contact Detection** competition. The goal is to detect external
 contact between NFL players, and between players and the ground, using tracking
 data, baseline helmet detections, video metadata, and contact labels.
 
-The current best submission is a tracking-only model with nearest-player
+The current scored champion is a tracking-only model with nearest-player
 context, temporal smoothing, and separate ground/player-player thresholds.
+Notebook 7 is the active local challenger, and Notebook 8 starts the video/YOLO
+investigation path.
 
 ## Current Best Result
 
 | Rank | Notebook | Submission | Local MCC | Public MCC | Private MCC | Status |
 | ---: | --- | --- | ---: | ---: | ---: | --- |
 | 1 | `5_type_specific_thresholds.ipynb` | Type-Specific Thresh, Version 3 | 0.67650 | 0.65170 | 0.65127 | Current champion |
-| 2 | `7_blended_type_models.ipynb` | Blended type models | Pending | Pending | Pending | Next challenger |
+| 2 | `7_blended_type_models.ipynb` | Blended type models | 0.67944 | Pending | Pending | Submit challenger |
 | 3 | `6_type_specific_models.ipynb` | Type-Specific Model, Version 2 | 0.67530 | 0.65212 | 0.64025 | Rejected: private regression |
 | 4 | `4_nearest_player_and_smoothing.ipynb` | Nearest Player, Version 3 | 0.67455 | 0.64497 | 0.64763 | Superseded |
 | 5 | `3_tracking_feature_model.ipynb` | Tracking Feature, Version 3 | 0.65310 | 0.63075 | 0.62593 | Superseded |
@@ -31,9 +33,10 @@ the best ground threshold stayed at `0.59`, while the best player-player
 threshold moved to `0.70`.
 
 Notebook 6 slightly improved public MCC but reduced private MCC by `0.01102`
-versus Notebook 5, so Notebook 5 remains the selected champion. The next
-challenger blends Notebook 5's stable unified probabilities with Notebook 6's
-type-specific probabilities instead of fully replacing the unified model.
+versus Notebook 5, so Notebook 5 remains the selected scored champion.
+Notebook 7 improved local MCC to `0.67944` by blending Notebook 5's stable
+unified probabilities with Notebook 6's type-specific probabilities instead of
+fully replacing the unified model.
 
 ## Key Takeaways
 
@@ -49,6 +52,10 @@ type-specific probabilities instead of fully replacing the unified model.
 - The remaining weakness is ground-contact detection. Notebook 6 showed that a
   fully separate ground model was less stable, so Notebook 7 tests a blended
   version of that idea.
+- The Team Hydrogen 2nd-place writeup suggests the next major gains come from
+  temporal video crops, helmet interpolation, tracking features encoded with
+  video context, and stage-2 blending. Notebook 8 starts with the lightweight
+  version of that path.
 
 ## Lessons Learned
 
@@ -98,7 +105,8 @@ Required files:
     |-- 4_nearest_player_and_smoothing.ipynb
     |-- 5_type_specific_thresholds.ipynb
     |-- 6_type_specific_models.ipynb
-    `-- 7_blended_type_models.ipynb
+    |-- 7_blended_type_models.ipynb
+    `-- 8_yolo_video_feature_probe.ipynb
 ```
 
 ## Notebook Workflow
@@ -112,6 +120,7 @@ Required files:
 | `5_type_specific_thresholds.ipynb` | Tunes separate ground and player-player thresholds after smoothing. |
 | `6_type_specific_models.ipynb` | Trains separate ground and player-player models before smoothing and threshold tuning. |
 | `7_blended_type_models.ipynb` | Blends unified and type-specific probabilities before smoothing and threshold tuning. |
+| `8_yolo_video_feature_probe.ipynb` | Investigates frame sync, helmet overlays, optional YOLO detections, and cheap video-derived features. |
 
 ## Modeling Direction
 
@@ -127,6 +136,5 @@ tracking-feature pipeline:
 6. Smooth probabilities within each play/contact-pair sequence.
 7. Evaluate ground and player-player slices separately before submitting.
 
-Next priority: run Notebook 7 and submit only if grouped validation beats
-Notebook 5's `0.67650` local MCC while keeping ground-contact MCC at or above
-`0.50623`.
+Next priority: submit Notebook 7 as the leaderboard challenger, then run
+Notebook 8 to decide whether helmet/video features deserve a production model.
