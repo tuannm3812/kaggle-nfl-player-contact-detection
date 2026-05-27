@@ -27,10 +27,11 @@ Use numbered, stable notebook names that match the project workflow:
 4. `4_nearest_player_and_smoothing.ipynb`
 5. `5_type_specific_thresholds.ipynb`
 6. `6_type_specific_models.ipynb`
+7. `7_blended_type_models.ipynb`
 
 Future notebooks should continue the sequence and describe the actual workflow,
-for example `7_video_features_and_fusion.ipynb` or
-`8_model_ensemble.ipynb`.
+for example `8_video_features_and_fusion.ipynb` or
+`9_model_ensemble.ipynb`.
 
 ## 3. Code Style
 

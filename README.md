@@ -20,14 +20,20 @@ context, temporal smoothing, and separate ground/player-player thresholds.
 | Rank | Notebook | Submission | Local MCC | Public MCC | Private MCC | Status |
 | ---: | --- | --- | ---: | ---: | ---: | --- |
 | 1 | `5_type_specific_thresholds.ipynb` | Type-Specific Thresh, Version 3 | 0.67650 | 0.65170 | 0.65127 | Current champion |
-| 2 | `6_type_specific_models.ipynb` | Type-specific models | Pending | Pending | Pending | Next challenger |
-| 3 | `4_nearest_player_and_smoothing.ipynb` | Nearest Player, Version 3 | 0.67455 | 0.64497 | 0.64763 | Superseded |
-| 4 | `3_tracking_feature_model.ipynb` | Tracking Feature, Version 3 | 0.65310 | 0.63075 | 0.62593 | Superseded |
+| 2 | `7_blended_type_models.ipynb` | Blended type models | Pending | Pending | Pending | Next challenger |
+| 3 | `6_type_specific_models.ipynb` | Type-Specific Model, Version 2 | 0.67530 | 0.65212 | 0.64025 | Rejected: private regression |
+| 4 | `4_nearest_player_and_smoothing.ipynb` | Nearest Player, Version 3 | 0.67455 | 0.64497 | 0.64763 | Superseded |
+| 5 | `3_tracking_feature_model.ipynb` | Tracking Feature, Version 3 | 0.65310 | 0.63075 | 0.62593 | Superseded |
 
 Notebook 5 improved over Notebook 4 by `+0.00673` public MCC and `+0.00364`
 private MCC. The gain came mainly from improving player-player precision:
 the best ground threshold stayed at `0.59`, while the best player-player
 threshold moved to `0.70`.
+
+Notebook 6 slightly improved public MCC but reduced private MCC by `0.01102`
+versus Notebook 5, so Notebook 5 remains the selected champion. The next
+challenger blends Notebook 5's stable unified probabilities with Notebook 6's
+type-specific probabilities instead of fully replacing the unified model.
 
 ## Key Takeaways
 
@@ -40,8 +46,9 @@ threshold moved to `0.70`.
   evaluated separately.
 - Temporal smoothing helps because labels and true contact events can shift
   across neighboring 10 Hz steps.
-- The remaining weakness is ground-contact detection. Notebook 6 tests whether
-  separate ground/player-player models can improve that slice.
+- The remaining weakness is ground-contact detection. Notebook 6 showed that a
+  fully separate ground model was less stable, so Notebook 7 tests a blended
+  version of that idea.
 
 ## Lessons Learned
 
@@ -90,7 +97,8 @@ Required files:
     |-- 3_tracking_feature_model.ipynb
     |-- 4_nearest_player_and_smoothing.ipynb
     |-- 5_type_specific_thresholds.ipynb
-    `-- 6_type_specific_models.ipynb
+    |-- 6_type_specific_models.ipynb
+    `-- 7_blended_type_models.ipynb
 ```
 
 ## Notebook Workflow
@@ -103,6 +111,7 @@ Required files:
 | `4_nearest_player_and_smoothing.ipynb` | Adds nearest-player density features and play/pair probability smoothing. |
 | `5_type_specific_thresholds.ipynb` | Tunes separate ground and player-player thresholds after smoothing. |
 | `6_type_specific_models.ipynb` | Trains separate ground and player-player models before smoothing and threshold tuning. |
+| `7_blended_type_models.ipynb` | Blends unified and type-specific probabilities before smoothing and threshold tuning. |
 
 ## Modeling Direction
 
@@ -118,6 +127,6 @@ tracking-feature pipeline:
 6. Smooth probabilities within each play/contact-pair sequence.
 7. Evaluate ground and player-player slices separately before submitting.
 
-Next priority: run Notebook 6 and submit only if grouped validation beats
-Notebook 5's `0.67650` local MCC, with no meaningful regression in the
-ground-contact slice.
+Next priority: run Notebook 7 and submit only if grouped validation beats
+Notebook 5's `0.67650` local MCC while keeping ground-contact MCC at or above
+`0.50623`.

@@ -203,6 +203,10 @@ The repository starts with two notebooks:
    [`6_type_specific_models.ipynb`](../notebooks/6_type_specific_models.ipynb)
    to train separate ground and player-player classifiers before smoothing and
    threshold tuning.
+7. Run the blended type-model challenger in
+   [`7_blended_type_models.ipynb`](../notebooks/7_blended_type_models.ipynb)
+   to blend unified and type-specific probabilities while guarding the
+   ground-contact slice.
 
 Recommended next experiments:
 

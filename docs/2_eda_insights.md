@@ -80,6 +80,13 @@ to `0.70`. Ground MCC stayed at `0.50623`; player-player MCC improved from
 `0.72226` to `0.72836`. The next refinement should therefore train separate
 contact-type models or add dedicated ground-contact features.
 
+Notebook 6 showed why the private leaderboard needs to override small public
+gains. It raised public MCC from `0.65170` to `0.65212`, but private MCC fell
+from `0.65127` to `0.64025`. Local validation also warned against it:
+overall MCC fell to `0.67530`, and ground MCC dropped to `0.49675`. The next
+refinement should use type-specific models only as a blended signal unless the
+ground slice improves.
+
 ## 4. Fixed Error
 
 The previous EDA notebook failed in the helmet/video metadata cell with:
@@ -202,7 +209,8 @@ ground-contact rows to zero.
 | `3_tracking_feature_model.ipynb` | Current recommended model. | Tracking dynamics let the model learn both player-player and ground-contact patterns. | It is still tracking-only; helmet/video visibility and temporal smoothing remain the biggest likely next gains. |
 | `4_nearest_player_and_smoothing.ipynb` | Superseded champion. | Local player density and temporal smoothing improved both public and private MCC. | Ground contact remains weaker than player-player contact. |
 | `5_type_specific_thresholds.ipynb` | Current scored champion. | Separate thresholds improved player-player precision and lifted both public and private MCC. | Ground contact did not improve, so it is the next target. |
-| `6_type_specific_models.ipynb` | Current challenger. | Separate ground and player-player models may improve the unchanged ground slice. | Needs a Kaggle validation run before submission. |
+| `6_type_specific_models.ipynb` | Rejected challenger. | Separate models slightly raised public MCC. | Private MCC dropped sharply and ground local MCC regressed. |
+| `7_blended_type_models.ipynb` | Current challenger. | Blends unified and type-specific probabilities to avoid full ground-model replacement. | Submit only if local MCC and ground-slice gates both clear Notebook 5. |
 
 ## 12. Path Decision
 
