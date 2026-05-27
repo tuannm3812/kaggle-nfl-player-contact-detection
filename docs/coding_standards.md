@@ -48,6 +48,8 @@ Each notebook should include:
 
 - a short purpose statement at the top;
 - a clear configuration section near the top;
+- a `NOTEBOOK_VERSION` string printed by the first code cell, so Kaggle output
+  can confirm the notebook is current;
 - explicit mode flags such as `RUN_FAST`, `FAST_SAMPLE_PLAYS`, and
   `DISTANCE_THRESHOLDS`;
 - the fixed Kaggle competition path
@@ -61,6 +63,14 @@ dataset available at the fixed input path.
 
 Committed notebooks should be lightweight and have outputs cleared. Kaggle is
 the trusted execution record.
+
+Before running a notebook on Kaggle:
+
+1. Pull or sync the latest repository/notebook version.
+2. Run the first setup cell and check `NOTEBOOK_VERSION`.
+3. Confirm the printed version matches the expected current version in
+   `docs/3_model_evaluation_progress.md`.
+4. Only trust metrics from the current version.
 
 ## 5. Validation Standards
 
