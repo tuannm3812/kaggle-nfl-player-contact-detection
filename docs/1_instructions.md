@@ -212,17 +212,18 @@ The repository starts with two notebooks:
    to inspect synchronized frames, helmet overlays, optional YOLO detections,
    optional research-mode YOLO install/download, and cheap helmet-derived
    feature candidates.
+9. Run the helmet-feature model challenger in
+   [`9_helmet_feature_model.ipynb`](../notebooks/9_helmet_feature_model.ipynb)
+   to add target-player helmet visibility, box geometry, and helmet-pair pixel
+   distance to the blended tracking model.
 
 Recommended next experiments:
 
 1. Submit Notebook 7 after confirming the printed notebook version and compare
    public/private MCC against Notebook 5.
-2. Use Notebook 8 to validate frame synchronization, target-player visibility,
-   and whether research-mode YOLO adds information beyond the provided helmet
-   boxes.
-3. Add helmet visibility, box geometry, and pixel-distance features before
-   attempting a heavy CNN.
-4. Build short-window tracking and helmet interpolation features around
+2. Run Notebook 9 to test whether helmet visibility, box geometry, and
+   pixel-distance features improve local MCC beyond Notebook 7.
+3. Build short-window tracking and helmet interpolation features around
    `t-2` through `t+2`.
-5. Move to multi-fold grouped validation before larger video models or stage-2
+4. Move to multi-fold grouped validation before larger video models or stage-2
    blends.

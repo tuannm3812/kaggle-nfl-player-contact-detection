@@ -7,181 +7,125 @@
 ![Metric](https://img.shields.io/badge/Metric-MCC-2E7D32?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Notebook%207%20Challenger-2E7D32?style=flat-square)
 
-This repository contains a notebook-first workflow for Kaggle's
-**1st and Future - Player Contact Detection** competition. The project detects
-external contact between NFL players, and between players and the ground, using
-player tracking data, baseline helmet detections, video metadata, and game
-video.
+## 1. Overview
 
-## 1. Project Overview
+This repository is a notebook-first workflow for Kaggle's
+**1st and Future - Player Contact Detection** competition. The project uses NFL
+tracking data, contact labels, baseline helmet boxes, video metadata, and game
+video to detect when players experience external contact.
 
-The competition is a player-safety problem. The NFL and AWS want a reliable way
-to identify contact moments throughout a football play, including body contact
-with the ground. Better contact labels can support injury surveillance,
-workload analysis, and future mitigation research.
-
-This repo is organized as a Kaggle notebook workflow:
-
-1. Understand the data through EDA and visual checks.
-2. Build a submission-safe baseline.
-3. Improve tabular tracking features.
-4. Add temporal smoothing and contact-type-specific thresholds.
-5. Investigate video and helmet-derived features as the next source of lift.
+The broader goal is player safety: better contact detection can support injury
+surveillance, workload analysis, and future prevention research.
 
 ## 2. Task and Goal
 
-For every allowable `contact_id`, predict whether contact occurred at a
-specific 10 Hz timestep.
+For each `contact_id`, predict whether contact occurred at a specific 10 Hz
+timestep.
 
-Contact types:
-
-| Contact Type | Meaning |
+| Contact Type | Definition |
 | --- | --- |
-| Player-player | Two NFL players are externally contacting each other. |
-| Player-ground | One player's body is contacting the ground; player 2 is encoded as `G`. |
+| Player-player | Two players are in contact. |
+| Player-ground | One player has non-foot body contact with the ground. |
 
-Submission format:
+The submission target is binary:
 
 ```text
-contact_id,contact
-58168_003392_0_38590_43854,0
-58168_003392_0_38590_41257,1
+contact = 1 -> contact occurred
+contact = 0 -> no contact occurred
 ```
 
-The final Kaggle artifact must be named `submission.csv`.
+## 3. Key Metric
 
-## 3. Evaluation Metric
+The competition metric is **Matthews Correlation Coefficient (MCC)**. MCC is
+the right metric because contact events are rare and accuracy would be
+misleading.
 
-The competition metric is **Matthews Correlation Coefficient (MCC)**. MCC is a
-better fit than accuracy because contact events are rare.
+Current EDA contact rates:
 
-Current EDA shows:
-
-| Target Slice | Contact Rate |
+| Slice | Contact Rate |
 | --- | ---: |
 | Overall | 1.37% |
 | Ground | 4.09% |
 | Player-player | 1.11% |
 
-Project evaluation rules:
+Validation principles:
 
-1. Validate by grouped `game_play` splits.
+1. Split by `game_play` to avoid play-level leakage.
 2. Tune thresholds on held-out plays.
-3. Report ground and player-player slices separately.
-4. Compare local MCC with public and private leaderboard MCC.
-5. Keep the selected model conservative when public/private scores disagree.
+3. Evaluate ground and player-player contact separately.
+4. Confirm local gains with public and private leaderboard scores.
 
-## 4. Current Progress
+## 4. Progress
 
 Notebook 5 is the current scored champion. Notebook 7 is the active local
 challenger and should be submitted next.
 
-| Rank | Notebook | Submission | Local MCC | Public MCC | Private MCC | Status |
-| ---: | --- | --- | ---: | ---: | ---: | --- |
-| 1 | `5_type_specific_thresholds.ipynb` | Type-Specific Thresh, Version 3 | 0.67650 | 0.65170 | 0.65127 | Current scored champion |
-| 2 | `7_blended_type_models.ipynb` | Blended type models | 0.67944 | Pending | Pending | Submit challenger |
-| 3 | `6_type_specific_models.ipynb` | Type-Specific Model, Version 2 | 0.67530 | 0.65212 | 0.64025 | Rejected: private regression |
-| 4 | `4_nearest_player_and_smoothing.ipynb` | Nearest Player, Version 3 | 0.67455 | 0.64497 | 0.64763 | Superseded |
-| 5 | `3_tracking_feature_model.ipynb` | Tracking Feature, Version 3 | 0.65310 | 0.63075 | 0.62593 | Superseded |
-| 6 | `2_distance_baseline_first_experiment.ipynb` | Distance baseline | 0.51863 | - | - | Superseded |
+| Rank | Notebook | Local MCC | Public MCC | Private MCC | Status |
+| ---: | --- | ---: | ---: | ---: | --- |
+| 1 | `5_type_specific_thresholds.ipynb` | 0.67650 | 0.65170 | 0.65127 | Current scored champion |
+| 2 | `7_blended_type_models.ipynb` | 0.67944 | Pending | Pending | Submit challenger |
+| 3 | `9_helmet_feature_model.ipynb` | Pending | Pending | Pending | New helmet-feature challenger |
+| 4 | `6_type_specific_models.ipynb` | 0.67530 | 0.65212 | 0.64025 | Rejected: private regression |
+| 5 | `4_nearest_player_and_smoothing.ipynb` | 0.67455 | 0.64497 | 0.64763 | Superseded |
+| 6 | `3_tracking_feature_model.ipynb` | 0.65310 | 0.63075 | 0.62593 | Superseded |
 
-Progress summary:
+Progress so far:
 
-1. Tracking-only features produced the first competitive submission.
-2. Nearest-player context and temporal smoothing lifted both public and private
-   scores.
-3. Type-specific thresholds improved player-player precision and became the
-   scored champion.
-4. Fully separate type-specific models slightly improved public score but hurt
-   private score, so they were rejected.
-5. Blended type-specific models improved local validation and are the next
-   leaderboard challenger.
+1. Tracking features produced the first competitive submission.
+2. Nearest-player context and temporal smoothing improved generalization.
+3. Separate ground/player-player thresholds improved player-player precision.
+4. Fully separate type-specific models overfit the private split and were
+   rejected.
+5. Blended type-specific models improved local MCC and are the next submission
+   candidate.
+6. Helmet-box features are now packaged as the next offline-safe challenger.
 
-## 5. Key Insights
+## 5. Key Learnings
 
-EDA and model iterations point to several stable lessons:
+1. Player-player distance is a very strong signal; contact is rare beyond
+   roughly `2` yards.
+2. Ground contact needs different features from player-player contact,
+   especially speed collapse, signed acceleration, and temporal windows.
+3. Probability smoothing helps because contact labels and true contact moments
+   can shift across neighboring 10 Hz steps.
+4. Helmet-derived video features look promising: target visibility and
+   helmet-pair pixel distance separate positive and negative rows.
+5. Generic YOLOv8 worked for research-mode visual probing, but on the sample
+   frame it was much sparser than the provided helmet boxes. Helmet-box
+   features are the safer next production path.
 
-1. Player-player distance is the strongest simple signal. Contact becomes rare
-   beyond roughly `2` yards.
-2. Ground contact behaves differently from player-player contact and needs
-   dedicated motion/window features.
-3. Temporal smoothing helps because contact labels and real contact moments can
-   shift across neighboring 10 Hz steps.
-4. Public leaderboard gains should not override private-score regression.
-5. Helmet visibility and helmet-pair pixel distance show promising video-based
-   signal before any heavy CNN work.
+## 6. Key Artifacts
 
-The Team Hydrogen 2nd-place writeup also suggests a longer-term direction:
-temporal video crops, synchronized Sideline/Endzone views, tracking features
-encoded with video context, helmet interpolation, and stage-2 blending.
-
-## 6. Data and Kaggle Path
-
-All notebooks use the fixed Kaggle competition path:
-
-```text
-/kaggle/input/competitions/nfl-player-contact-detection
-```
-
-Required files:
-
-| File | Purpose |
+| Artifact | Purpose |
 | --- | --- |
-| `train_labels.csv` | Training labels for player-player and player-ground candidates. |
-| `sample_submission.csv` | Submission schema and required test rows. |
-| `train_player_tracking.csv`, `test_player_tracking.csv` | 10 Hz tracking data. |
-| `train_baseline_helmets.csv`, `test_baseline_helmets.csv` | Baseline helmet boxes and player assignments. |
-| `train_video_metadata.csv`, `test_video_metadata.csv` | Video timing metadata for frame synchronization. |
-| `train/`, `test/` | MP4 videos for each play. |
+| `notebooks/1_eda_contact_tracking_video_context.ipynb` | EDA, video overlay demo, tracking and helmet context. |
+| `notebooks/5_type_specific_thresholds.ipynb` | Current scored champion. |
+| `notebooks/7_blended_type_models.ipynb` | Current local challenger. |
+| `notebooks/8_yolo_video_feature_probe.ipynb` | Research-mode video/YOLO probe. |
+| `notebooks/9_helmet_feature_model.ipynb` | Helmet visibility, geometry, and pixel-distance feature challenger. |
+| `docs/2_eda_insights.md` | EDA findings and feature ideas. |
+| `docs/3_model_evaluation_progress.md` | Model scores, decisions, and next experiments. |
 
-## 7. Notebook Workflow
+## 7. Business Applications
 
-| Notebook | Purpose |
-| --- | --- |
-| `1_eda_contact_tracking_video_context.ipynb` | EDA, data quality, contact balance, tracking context, helmet/video metadata, and video overlay demo. |
-| `2_distance_baseline_first_experiment.ipynb` | Starter-style distance baseline with grouped validation and `submission.csv` generation. |
-| `3_tracking_feature_model.ipynb` | Tracking-feature classifier for player-player and ground rows with MCC threshold tuning. |
-| `4_nearest_player_and_smoothing.ipynb` | Adds nearest-player density features and play/pair probability smoothing. |
-| `5_type_specific_thresholds.ipynb` | Tunes separate ground and player-player thresholds after smoothing. |
-| `6_type_specific_models.ipynb` | Trains separate ground and player-player models before smoothing and threshold tuning. |
-| `7_blended_type_models.ipynb` | Blends unified and type-specific probabilities before smoothing and threshold tuning. |
-| `8_yolo_video_feature_probe.ipynb` | Research-mode video probe with helmet overlays, CPU YOLO install/download, and cheap video-derived features. |
+Reliable contact detection can turn raw tracking and video feeds into a more
+complete view of player load and exposure. In practice, a system like this
+could support:
 
-Each notebook prints a `NOTEBOOK_VERSION` string at the top. Kaggle results
-should only be trusted when the printed version matches
+1. **Player safety monitoring**: identify repeated contact events across plays,
+   games, and seasons.
+2. **Injury surveillance**: connect contact type, intensity, timing, and field
+   context with injury review workflows.
+3. **Coaching and technique review**: surface plays with high-contact patterns
+   for teaching safer tackling, blocking, and landing mechanics.
+4. **Medical and performance analytics**: quantify player contact burden beyond
+   speed, acceleration, and distance traveled.
+5. **Video review prioritization**: help analysts quickly locate moments where
+   player-player or ground contact is likely.
+
+The competition target is binary contact detection, but the real application is
+decision support: making high-risk contact moments easier to measure, review,
+and understand.
+
+Tactical next experiments are tracked in
 [`docs/3_model_evaluation_progress.md`](docs/3_model_evaluation_progress.md).
-
-## 8. Repository Structure
-
-```text
-.
-|-- README.md
-|-- docs/
-|   |-- coding_standards.md
-|   |-- 1_instructions.md
-|   |-- 2_eda_insights.md
-|   `-- 3_model_evaluation_progress.md
-`-- notebooks/
-    |-- 1_eda_contact_tracking_video_context.ipynb
-    |-- 2_distance_baseline_first_experiment.ipynb
-    |-- 3_tracking_feature_model.ipynb
-    |-- 4_nearest_player_and_smoothing.ipynb
-    |-- 5_type_specific_thresholds.ipynb
-    |-- 6_type_specific_models.ipynb
-    |-- 7_blended_type_models.ipynb
-    `-- 8_yolo_video_feature_probe.ipynb
-```
-
-## 9. Next Steps
-
-1. Submit Notebook 7 and compare public/private MCC against Notebook 5.
-2. Rerun Notebook 8 with internet enabled and confirm
-   `YOLO_VIDEO_PROBE_V3_CPU`.
-3. Use the video probe output to decide whether Notebook 9 should add helmet
-   visibility, helmet-pair pixel distance, and interpolated box features.
-4. Move toward multi-fold grouped validation before heavier video models or a
-   stage-2 blend.
-
-Final submission notebooks must run with internet disabled. YOLO can be used
-for research notebooks, but any final YOLO path needs offline Kaggle inputs for
-packages and weights.

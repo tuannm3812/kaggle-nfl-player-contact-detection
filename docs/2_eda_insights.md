@@ -13,7 +13,7 @@ The current EDA run is:
 | Notebook | Version |
 | --- | --- |
 | `1_eda_contact_tracking_video_context.ipynb` | `EDA_V10_VIDEO_DEMO` |
-| `8_yolo_video_feature_probe.ipynb` | `YOLO_VIDEO_PROBE_V4_NETCHECK` |
+| `8_yolo_video_feature_probe.ipynb` | `YOLO_VIDEO_PROBE_V5_CLEAN` |
 
 ## 2. Dataset Scale
 
@@ -335,18 +335,30 @@ EDA interpretation:
 loaded the expected tables and displayed a helmet overlay for the same sample
 contact frame.
 
-The previous run of the optional YOLO cell did not run because the Kaggle image
-did not have `ultralytics` installed:
+An earlier YOLO run failed because Kaggle could not reach PyPI:
 
 ```text
 Skipping YOLO: ultralytics is not installed in this notebook image.
 ```
 
-This is not a failure. The updated notebook version,
-`YOLO_VIDEO_PROBE_V4_NETCHECK`, now supports internet-enabled research mode:
+The latest successful run showed that internet-enabled research mode works:
+`ultralytics` installed, `yolov8n.pt` downloaded, and inference ran on CPU.
+The important result is qualitative rather than predictive:
+
+| Source | Frame Result |
+| --- | --- |
+| Baseline helmets | 22 helmet boxes on the sample contact frame. |
+| Generic YOLOv8n | 3 detections: 2 `person` boxes and 1 false `kite` box. |
+
+This suggests that generic YOLOv8 is useful for visual probing, but it is not
+reliable enough to replace competition-provided helmet boxes for player-level
+features.
+
+The updated notebook version, `YOLO_VIDEO_PROBE_V5_CLEAN`, keeps the research
+flow simple:
 
 1. install `ultralytics` if missing;
-2. load attached offline YOLO weights if present;
+2. load one attached offline YOLO weight path if present;
 3. download `yolov8n.pt` when internet is enabled;
 4. check PyPI connectivity before attempting package install;
 5. run YOLO on CPU for the sample contact frame and save an annotated
@@ -432,3 +444,8 @@ These are feature ideas suggested by EDA, not model results:
 5. Add short-window tracking features around contact candidates.
 6. Use YOLO only after proving it adds information beyond baseline helmet
    boxes, or use it as a qualitative tool for body-level context.
+
+These ideas are now packaged into
+[`9_helmet_feature_model.ipynb`](../notebooks/9_helmet_feature_model.ipynb),
+which adds exact-frame helmet visibility, box geometry, and helmet-pair pixel
+distance to the blended tracking model.

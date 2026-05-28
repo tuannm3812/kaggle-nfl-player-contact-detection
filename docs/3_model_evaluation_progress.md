@@ -13,7 +13,8 @@ Current expected notebook versions:
 | `5_type_specific_thresholds.ipynb` | `TYPE_THRESHOLDS_V2_SAFE_MCC` |
 | `6_type_specific_models.ipynb` | `TYPE_MODELS_V1_CHALLENGER` |
 | `7_blended_type_models.ipynb` | `BLENDED_TYPE_MODELS_V1_CHALLENGER` |
-| `8_yolo_video_feature_probe.ipynb` | `YOLO_VIDEO_PROBE_V4_NETCHECK` |
+| `8_yolo_video_feature_probe.ipynb` | `YOLO_VIDEO_PROBE_V5_CLEAN` |
+| `9_helmet_feature_model.ipynb` | `HELMET_FEATURE_MODEL_V1_CHALLENGER` |
 
 If Kaggle output shows an older version string, sync the notebook before using
 the output for decisions.
@@ -22,10 +23,11 @@ the output for decisions.
 | ---: | --- | --- | ---: | ---: | ---: | --- |
 | 1 | `5_type_specific_thresholds.ipynb` | Type-Specific Thresh, Version 3 | 0.67650 | 0.65170 | 0.65127 | Current scored champion |
 | 2 | `7_blended_type_models.ipynb` | Blended type models | 0.67944 | Pending | Pending | Submit challenger |
-| 3 | `6_type_specific_models.ipynb` | Type-Specific Model, Version 2 | 0.67530 | 0.65212 | 0.64025 | Rejected: private regression |
-| 4 | `4_nearest_player_and_smoothing.ipynb` | Nearest Player, Version 3 | 0.67455 | 0.64497 | 0.64763 | Superseded |
-| 5 | `3_tracking_feature_model.ipynb` | Tracking Feature, Version 3 | 0.65310 | 0.63075 | 0.62593 | Superseded |
-| 6 | `2_distance_baseline_first_experiment.ipynb` | Distance baseline | 0.51863 | - | - | Superseded |
+| 3 | `9_helmet_feature_model.ipynb` | Helmet feature model | Pending | Pending | Pending | Run after Notebook 7 or as local challenger |
+| 4 | `6_type_specific_models.ipynb` | Type-Specific Model, Version 2 | 0.67530 | 0.65212 | 0.64025 | Rejected: private regression |
+| 5 | `4_nearest_player_and_smoothing.ipynb` | Nearest Player, Version 3 | 0.67455 | 0.64497 | 0.64763 | Superseded |
+| 6 | `3_tracking_feature_model.ipynb` | Tracking Feature, Version 3 | 0.65310 | 0.63075 | 0.62593 | Superseded |
+| 7 | `2_distance_baseline_first_experiment.ipynb` | Distance baseline | 0.51863 | - | - | Superseded |
 
 Notebook 3 is the first scored model. Its public/private gap is small
 (`0.00482`), which suggests the model generalizes reasonably across leaderboard
@@ -56,7 +58,8 @@ Interpretation:
 | Notebook | Status | Goal | Submit If |
 | --- | --- | --- | --- |
 | `7_blended_type_models.ipynb` | Local validation improved | Blend the stable unified model with type-specific models before smoothing and threshold tuning | Submit as the next leaderboard challenger; keep Notebook 5 selected until public/private confirm it |
-| `8_yolo_video_feature_probe.ipynb` | EDA/video probe | Inspect frame sync, helmet overlays, CPU YOLO install/download research mode, and cheap helmet geometry features | Do not submit directly; use findings to decide whether Notebook 9 should add video features |
+| `8_yolo_video_feature_probe.ipynb` | EDA/video probe completed | Inspect frame sync, helmet overlays, CPU YOLO install/download research mode, and cheap helmet geometry features | Use findings to build Notebook 9 with helmet-derived features; do not submit this notebook directly |
+| `9_helmet_feature_model.ipynb` | Ready to run | Add helmet visibility, geometry, and pixel-distance features to the Notebook 7 blended model | Promote only if local MCC beats `0.67944` and contact-type slices remain stable |
 
 Notebook 4 targeted two likely weaknesses:
 
@@ -145,9 +148,11 @@ until Notebook 7's private score is known.
 
 The Team Hydrogen 2nd-place writeup suggests the next major gains probably come
 from video-aware modeling rather than more small tabular threshold changes. The
-near-term version for this repo is not a full CNN ensemble yet; it is a
-helmet/video feature probe followed by cheap video-derived features if the EDA
-shows separation.
+Notebook 8 probe supports a conservative version of that direction: generic
+YOLOv8 was sparse on the sample frame, while baseline helmet boxes were dense
+and player-assigned. The next production model should therefore add
+helmet-derived features before attempting a full CNN or YOLO segmentation
+pipeline.
 
 ## 4. Evaluation Rules
 
@@ -165,8 +170,8 @@ Use this decision order for new experiments:
 | Priority | Experiment | Reason |
 | ---: | --- | --- |
 | 1 | Submit Notebook 7 | Local MCC rose to `0.67944`; leaderboard scores decide whether it replaces Notebook 5. |
-| 2 | Run Notebook 8 YOLO/video probe | Tests frame sync, helmet overlays, and whether optional YOLO adds information beyond helmet boxes. |
-| 3 | Helmet visibility features | Baseline helmet boxes can provide posture, occlusion, and pixel-distance proxies. |
-| 4 | Short-window features around `t-2` to `t+2` | Contact labels are noisy and contact evolves over adjacent steps. |
-| 5 | Multi-fold grouped validation | Team Hydrogen used grouped CV; this would reduce single-split volatility before heavier models. |
-| 6 | Stage-2 blend | Use tracking probabilities plus selected distance/position/window features only after OOF predictions exist. |
+| 2 | Run Notebook 9 helmet-feature model | Add target visibility, box geometry, and helmet-pair pixel distance from baseline helmet boxes. |
+| 3 | Short-window features around `t-2` to `t+2` | Contact labels are noisy and contact evolves over adjacent steps. |
+| 4 | Multi-fold grouped validation | Team Hydrogen used grouped CV; this would reduce single-split volatility before heavier models. |
+| 5 | Stage-2 blend | Use tracking probabilities plus selected distance/position/window features only after OOF predictions exist. |
+| 6 | YOLOv7/segmentation investigation | Consider only if helmet-feature modeling plateaus; generic YOLOv8 was too sparse on the sample frame. |

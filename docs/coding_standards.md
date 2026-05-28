@@ -29,9 +29,10 @@ Use numbered, stable notebook names that match the project workflow:
 6. `6_type_specific_models.ipynb`
 7. `7_blended_type_models.ipynb`
 8. `8_yolo_video_feature_probe.ipynb`
+9. `9_helmet_feature_model.ipynb`
 
 Future notebooks should continue the sequence and describe the actual workflow,
-for example `9_helmet_feature_model.ipynb` or `10_model_ensemble.ipynb`.
+for example `10_model_ensemble.ipynb`.
 
 ## 3. Code Style
 
@@ -115,6 +116,8 @@ Project-safe feature themes:
 
 Research notebooks may install packages or download weights when internet is
 enabled, but final submission notebooks must use only offline Kaggle inputs.
+Prefer one explicit input path per dependency instead of lists of possible
+mount directories once the expected Kaggle location is known.
 
 Avoid target leakage:
 
