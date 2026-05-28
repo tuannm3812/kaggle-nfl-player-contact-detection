@@ -2,16 +2,20 @@
 
 ## 1. Repository Scope
 
-This repository is intentionally notebook-first. Kaggle notebooks are the
-executable source of truth, while `docs/` captures competition instructions,
-EDA findings, modeling decisions, and lightweight project notes.
+This repository is organized around Kaggle-ready experiment notebooks and a
+small set of supporting project documents. Notebooks are the executable source
+of truth, while `docs/` captures competition context, EDA findings, modeling
+decisions, standards, and next steps.
 
 Keep the root small:
 
 - `notebooks/` for Kaggle notebooks.
-- `docs/` for standards, instructions, EDA notes, and notebook writeups.
-- `docs/3_model_evaluation_progress.md` for validation results,
-  leaderboard scores, champion/challenger decisions, and next experiments.
+- `docs/1_competition_overview.md` for competition context and dataset notes.
+- `docs/2_eda_insights.md` for EDA findings and feature ideas.
+- `docs/3_model_evaluation_progress.md` for validation results, leaderboard
+  scores, and champion/challenger decisions.
+- `docs/4_next_steps.md` for the practical roadmap and acceptance gates.
+- `docs/5_coding_standards.md` for repository conventions.
 - `README.md` for the high-level project overview and current best result.
 
 Do not commit raw Kaggle data, local model checkpoints, generated videos,

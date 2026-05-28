@@ -9,7 +9,7 @@
 
 ## 1. Overview
 
-This repository is a notebook-first workflow for Kaggle's
+This repository develops an applied machine-learning workflow for Kaggle's
 **1st and Future - Player Contact Detection** competition. The project uses NFL
 tracking data, contact labels, baseline helmet boxes, video metadata, and game
 video to detect when players experience external contact.
@@ -105,6 +105,7 @@ Progress so far:
 | `notebooks/9_helmet_feature_model.ipynb` | Helmet visibility, geometry, and pixel-distance feature challenger. |
 | `docs/2_eda_insights.md` | EDA findings and feature ideas. |
 | `docs/3_model_evaluation_progress.md` | Model scores, decisions, and next experiments. |
+| `docs/4_next_steps.md` | Practical roadmap and acceptance gates. |
 
 ## 7. Business Applications
 
@@ -128,4 +129,4 @@ decision support: making high-risk contact moments easier to measure, review,
 and understand.
 
 Tactical next experiments are tracked in
-[`docs/3_model_evaluation_progress.md`](docs/3_model_evaluation_progress.md).
+[`docs/4_next_steps.md`](docs/4_next_steps.md).
