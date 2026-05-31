@@ -12,9 +12,9 @@ Current expected notebook versions:
 | `4_nearest_player_and_smoothing.ipynb` | `NEAREST_SMOOTHING_V1_CHALLENGER` |
 | `5_type_specific_thresholds.ipynb` | `TYPE_THRESHOLDS_V2_SAFE_MCC` |
 | `6_type_specific_models.ipynb` | `TYPE_MODELS_V1_CHALLENGER` |
-| `7_blended_type_models.ipynb` | `BLENDED_TYPE_MODELS_V1_CHALLENGER` |
+| `7_blended_type_models.ipynb` | `BLENDED_TYPE_MODELS_V2_RUN_MODE` |
 | `8_yolo_video_feature_probe.ipynb` | `YOLO_VIDEO_PROBE_V5_CLEAN` |
-| `9_helmet_feature_model.ipynb` | `HELMET_FEATURE_MODEL_V1_CHALLENGER` |
+| `9_helmet_feature_model.ipynb` | `HELMET_FEATURE_MODEL_V2_RUN_MODE` |
 
 If Kaggle output shows an older version string, sync the notebook before using
 the output for decisions.

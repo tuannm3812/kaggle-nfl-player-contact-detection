@@ -60,6 +60,8 @@ Each notebook should include:
   can confirm the notebook is current;
 - explicit mode flags such as `RUN_FAST`, `FAST_SAMPLE_PLAYS`, and
   `DISTANCE_THRESHOLDS`;
+- for long-running model notebooks, a `RUN_MODE` switch with `train` and
+  `submission` modes;
 - the fixed Kaggle competition path
   `/kaggle/input/competitions/nfl-player-contact-detection`;
 - Markdown insight cells after important checks, plots, or metrics;
@@ -81,6 +83,16 @@ Notebook outputs are useful when they document a real Kaggle run:
   refreshes.
 
 Kaggle remains the trusted execution environment for final metrics.
+
+For long-running model notebooks:
+
+- `RUN_MODE = "train"` should perform grouped validation, tune thresholds, and
+  write reproduction artifacts.
+- `RUN_MODE = "submission"` should skip validation and use a reviewed frozen
+  inference configuration.
+- Training artifacts should be compact and reproducible: `run_metadata.json`,
+  `model_config.json`, `feature_columns.json`, `threshold_search.csv`, and
+  `validation_summary.csv`.
 
 Before running a notebook on Kaggle:
 

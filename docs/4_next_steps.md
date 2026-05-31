@@ -8,15 +8,15 @@ Contact Detection project. Model scores and champion decisions are tracked in
 
 1. **Submit Notebook 7**
 
-   Run `7_blended_type_models.ipynb` on Kaggle and submit it as the next
-   leaderboard challenger. It has the strongest current local MCC:
-   `0.67944`.
+   Run `7_blended_type_models.ipynb` in `RUN_MODE = "train"` when validating
+   or refreshing artifacts. Use `RUN_MODE = "submission"` only after the frozen
+   config has been reviewed. It has the strongest current local MCC: `0.67944`.
 
 2. **Run Notebook 9**
 
-   Run `9_helmet_feature_model.ipynb` to test whether helmet visibility, box
-   geometry, and helmet-pair pixel distance improve local validation beyond
-   Notebook 7.
+   Run `9_helmet_feature_model.ipynb` in `RUN_MODE = "train"` to test whether
+   helmet visibility, box geometry, and helmet-pair pixel distance improve
+   local validation beyond Notebook 7.
 
 3. **Record public/private scores**
 
@@ -55,7 +55,21 @@ A new model should be promoted only when it clears these checks:
 5. Add short-window helmet interpolation only after the exact-frame helmet
    feature set is understood.
 
-## 5. Research Notes
+## 5. Reproduction Artifacts
+
+Long-running model notebooks should write compact artifacts to
+`/kaggle/working/`:
+
+| Artifact | Purpose |
+| --- | --- |
+| `submission.csv` | Kaggle submission file. |
+| `run_metadata.json` | Notebook version, run mode, package versions, feature count, final thresholds, and submission positive rate. |
+| `model_config.json` | Tuned validation configuration from `RUN_MODE = "train"`. |
+| `feature_columns.json` | Exact model feature list used in the run. |
+| `threshold_search.csv` | Validation search surface for blend weights, smoothing, and thresholds. |
+| `validation_summary.csv` | Contact-type slice metrics. |
+
+## 6. Research Notes
 
 Generic YOLOv8 ran successfully in research mode, but on the inspected football
 frame it detected only a few objects while the competition-provided helmet file
